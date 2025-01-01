@@ -20,13 +20,13 @@ if !(isdir(dir))
 end
 
 #X = readtable(fdata, separator='\t', header=false)[1:tfnum,1:cnum]
-X = CSV.read(fdata, header=false)
-X = convert(Matrix, X)
+X = CSV.read(fdata, DataFrame; header=false)
+X = Matrix(X)
 W = zeros(tfnum, pnum)
 Z = zeros(pnum, cnum)
 WZ = zeros(tfnum, cnum)
 
-pseudotime = CSV.read(ftime, header=false)[1:cnum,2]
+pseudotime = Matrix(CSV.read(ftime, DataFrame; header=false))[1:cnum,2]
 pseudotime = pseudotime/maximum(pseudotime)
 
 new_B = zeros(pnum)
@@ -89,7 +89,8 @@ end
 
 #output W
 #writetable(dir*"/W.txt", convert(DataFrame, W), separator = '\t', header = false)
-DataFrame(W) |> CSV.write(dir*"/W.txt", delim='\t', writeheader=false)
+# DataFrame(W) |> CSV.write(dir*"/W.txt", delim='\t', writeheader=false)
+DataFrame(W, :auto) |> CSV.write(dir*"/W.txt", delim='\t', writeheader=false)
 
 #infer A
 B = zeros(pnum, pnum)
@@ -102,5 +103,5 @@ A = W * B * invW
 #write A and B
 #writetable(dir*"/A.txt", convert(DataFrame, A), separator = '\t', header = false)
 #writetable(dir*"/B.txt", convert(DataFrame, B), separator = '\t', header = false)
-DataFrame(A) |> CSV.write(dir*"/A.txt", delim='\t', writeheader=false)
-DataFrame(B) |> CSV.write(dir*"/B.txt", delim='\t', writeheader=false)
+DataFrame(A, :auto) |> CSV.write(dir*"/A.txt", delim='\t', writeheader=false)
+DataFrame(B, :auto) |> CSV.write(dir*"/B.txt", delim='\t', writeheader=false)
